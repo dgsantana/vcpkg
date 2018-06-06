@@ -13,9 +13,9 @@
 include(vcpkg_common_functions)
 set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src)
 vcpkg_download_distfile(ARCHIVE
-    URLS "https://chromium.googlesource.com/libyuv/libyuv/+archive/master.tar.gz"
-    FILENAME "master.tar.gz"
-    SHA512 6eea2d78e8ba2b41d45de41fcde7a5213f0060c1997c6c71b98e4297a496901ae0f6b87edc001cd64f82edf95d9e991906596ecc91c15bbd5e7b1573fe4fa8dd
+    URLS "https://chromium.googlesource.com/libyuv/libyuv/+archive/196e2e72a3190f539d5ad5f32c7b154154324951.tar.gz"
+    FILENAME "libyuv.tar.gz"
+    SHA512 a54c3e49257c500e5ab39e4e01de4ba1c9552bbf921b9d388e958d4291416bd4ee3618c87b7ec3784692656c634d646be9f2905505b825a3188fa4573ad8d327
 )
 vcpkg_extract_source_archive(${ARCHIVE})
 
