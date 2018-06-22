@@ -11,18 +11,13 @@
 #
 
 include(vcpkg_common_functions)
-set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src)
+set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/openh264_1.7.0)
 vcpkg_download_distfile(ARCHIVE
-    URLS "https://chromium.googlesource.com/libyuv/libyuv/+archive/196e2e72a3190f539d5ad5f32c7b154154324951.tar.gz"
-    FILENAME "libyuv.tar.gz"
-    SHA512 9f9a53bf1e11ec20ff60981e9130406571930a87387719101185f691ea038e07ef5d01438360478009353b742b07dde21a36ff0d212d72a269090200968f45fd
+    URLS "https://github.com/cisco/openh264/archive/v1.7.0.zip"
+    FILENAME "openh264_1.7.0.zip"
+    SHA512 5a9c77454838985f4028674e51c315599cae5e97b8720e150233a70dc983bea20ff20991428a1e9b163e6c3aa2b5c0409dc071183ae3b84a677820caaf9bda73
 )
 vcpkg_extract_source_archive(${ARCHIVE})
-
-vcpkg_apply_patches(
-    SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src
-    PATCHES "${CMAKE_CURRENT_LIST_DIR}/fix-jpeg-and-install.patch"
-)
 
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
@@ -34,13 +29,5 @@ vcpkg_configure_cmake(
 
 vcpkg_install_cmake()
 
-#vcpkg_fixup_cmake_targets()
 # Handle copyright
-file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/libyuv RENAME copyright)
-file(INSTALL ${CURRENT_PACKAGES_DIR}/debug/share/libyuv/LIBYUVConfig-debug.cmake DESTINATION ${CURRENT_PACKAGES_DIR}/share/libyuv )
-# Remove debug includes
-file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
-file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/share)
-file(COPY ${CMAKE_CURRENT_LIST_DIR}/usage DESTINATION ${CURRENT_PACKAGES_DIR}/share/libyuv)
-
-vcpkg_copy_pdbs()
+# file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/openh264 RENAME copyright)
