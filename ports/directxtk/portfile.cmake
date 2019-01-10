@@ -1,14 +1,3 @@
-# Common Ambient Variables:
-#   CURRENT_BUILDTREES_DIR    = ${VCPKG_ROOT_DIR}\buildtrees\${PORT}
-#   CURRENT_PACKAGES_DIR      = ${VCPKG_ROOT_DIR}\packages\${PORT}_${TARGET_TRIPLET}
-#   CURRENT_PORT_DIR          = ${VCPKG_ROOT_DIR}\ports\${PORT}
-#   PORT                      = current port name (zlib, etc)
-#   TARGET_TRIPLET            = current triplet (x86-windows, x64-windows-static, etc)
-#   VCPKG_CRT_LINKAGE         = C runtime linkage type (static, dynamic)
-#   VCPKG_LIBRARY_LINKAGE     = target library linkage type (static, dynamic)
-#   VCPKG_ROOT_DIR            = <C:\path\to\current\vcpkg>
-#   VCPKG_TARGET_ARCHITECTURE = target architecture (x64, x86, arm)
-#
 include(vcpkg_common_functions)
 
 if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
@@ -20,48 +9,46 @@ if(NOT VCPKG_CRT_LINKAGE STREQUAL "dynamic")
   message(FATAL_ERROR "DirectXTK only supports dynamic CRT linkage")
 endif()
 
-set(DIRECTXTK_VERSION dec2017)
-set(DIRECTXTK_ARCHIVE_HASH 30df95c17d6d61bdeb372d3ba112995ad76753e23ddaf7fb104d2384e3b26e22a383355d2a411fdfce866d4a98205e4ed039a8f34a9e1d9bc1ee90b4064bcd15)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO Microsoft/DirectXTK
-    REF ${DIRECTXTK_VERSION}
-    SHA512 ${DIRECTXTK_ARCHIVE_HASH}
+    REF oct2018b
+    SHA512 d9eb0d0537dd6638bfe089bbaa77ad4c4065d43c53143686e60b8c62814f1c7a0fc9a0361a418b1f0fa0881faa14c92c604fffb6670dd8c1260e67d56fea9bab
     HEAD_REF master
 )
 
 IF (TRIPLET_SYSTEM_ARCH MATCHES "x86")
-	SET(BUILD_ARCH "Win32")
+    SET(BUILD_ARCH "Win32")
 ELSE()
-	SET(BUILD_ARCH ${TRIPLET_SYSTEM_ARCH})
+    SET(BUILD_ARCH ${TRIPLET_SYSTEM_ARCH})
 ENDIF()
 
 vcpkg_build_msbuild(
     PROJECT_PATH ${SOURCE_PATH}/DirectXTK_Desktop_2017.sln
-	PLATFORM ${BUILD_ARCH}
+    PLATFORM ${BUILD_ARCH}
 )
 
 file(INSTALL
-	${SOURCE_PATH}/Bin/Desktop_2017/${BUILD_ARCH}/Release/DirectXTK.lib
-	DESTINATION ${CURRENT_PACKAGES_DIR}/lib)
+    ${SOURCE_PATH}/Bin/Desktop_2017/${BUILD_ARCH}/Release/DirectXTK.lib
+    DESTINATION ${CURRENT_PACKAGES_DIR}/lib)
 
 file(INSTALL
-	${SOURCE_PATH}/Bin/Desktop_2017/${BUILD_ARCH}/Debug/DirectXTK.lib
-	DESTINATION ${CURRENT_PACKAGES_DIR}/debug/lib)
+    ${SOURCE_PATH}/Bin/Desktop_2017/${BUILD_ARCH}/Debug/DirectXTK.lib
+    DESTINATION ${CURRENT_PACKAGES_DIR}/debug/lib)
 
 set(DXTK_TOOL_PATH ${CURRENT_PACKAGES_DIR}/tools/directxtk)
 file(MAKE_DIRECTORY ${DXTK_TOOL_PATH})
 
 file(INSTALL
-	${SOURCE_PATH}/MakeSpriteFont/bin/Release/MakeSpriteFont.exe 
-	DESTINATION ${DXTK_TOOL_PATH})
+    ${SOURCE_PATH}/MakeSpriteFont/bin/Release/MakeSpriteFont.exe
+    DESTINATION ${DXTK_TOOL_PATH})
 
 file(INSTALL
-	${SOURCE_PATH}/XWBTool/Bin/Desktop_2017/${BUILD_ARCH}/Release/XWBTool.exe 
-	DESTINATION ${DXTK_TOOL_PATH})
+    ${SOURCE_PATH}/XWBTool/Bin/Desktop_2017/${BUILD_ARCH}/Release/XWBTool.exe
+    DESTINATION ${DXTK_TOOL_PATH})
 
 file(INSTALL
-	${SOURCE_PATH}/Inc/
+    ${SOURCE_PATH}/Inc/
     DESTINATION ${CURRENT_PACKAGES_DIR}/include/DirectXTK
 )
 
