@@ -330,9 +330,9 @@ namespace vcpkg::Install
                 System::printf("Building package %s...\n", display_name_with_features);
 
             auto result = [&]() -> Build::ExtendedBuildResult {
-                const Build::BuildPackageConfig build_config{action.source_control_file.value_or_exit(VCPKG_LINE_INFO),
+                const auto& scfl = action.source_control_file_location.value_or_exit(VCPKG_LINE_INFO);
+                const Build::BuildPackageConfig build_config{scfl,
                                                              action.spec.triplet(),
-                                                             paths.port_dir(action.spec),
                                                              action.build_options,
                                                              action.feature_list};
                 return Build::build_package(paths, build_config, status_db);
@@ -354,8 +354,7 @@ namespace vcpkg::Install
             {
                 auto& fs = paths.get_filesystem();
                 const fs::path package_dir = paths.package_dir(action.spec);
-                std::error_code ec;
-                fs.remove_all(package_dir, ec);
+                fs.remove_all(package_dir, VCPKG_LINE_INFO);
             }
 
             if (action.build_options.clean_downloads == Build::CleanDownloads::YES)
@@ -652,13 +651,10 @@ namespace vcpkg::Install
             Build::FailOnTombstone::NO,
         };
 
-        auto all_ports = Paragraphs::load_all_ports(fs, paths.ports);
-        std::unordered_map<std::string, SourceControlFile> scf_map;
-        for (auto&& port : all_ports)
-            scf_map[port->core_paragraph->name] = std::move(*port);
-        MapPortFileProvider provider(scf_map);
+        //// Load ports from ports dirs
+        PathsPortFileProvider provider(paths, args.overlay_ports.get());
 
-        // Note: action_plan will hold raw pointers to SourceControlFiles from this map
+        // Note: action_plan will hold raw pointers to SourceControlFileLocations from this map
         std::vector<AnyAction> action_plan =
             create_feature_install_plan(provider, FullPackageSpec::to_feature_specs(specs), status_db);
 
@@ -686,7 +682,7 @@ namespace vcpkg::Install
 
         Metrics::g_metrics.lock()->track_property("installplan", specs_string);
 
-        Dependencies::print_plan(action_plan, is_recursive);
+        Dependencies::print_plan(action_plan, is_recursive, paths.ports);
 
         if (dry_run)
         {

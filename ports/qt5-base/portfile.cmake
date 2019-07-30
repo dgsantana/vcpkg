@@ -87,6 +87,10 @@ if(NOT VCPKG_CMAKE_SYSTEM_NAME OR VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore
     )
 
 elseif(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    if (NOT EXISTS "/usr/include/GL/glu.h")
+        message(FATAL_ERROR "qt5 requires libgl1-mesa-dev and libglu1-mesa-dev, please use your distribution's package manager to install them.\nExample: \"apt-get install libgl1-mesa-dev\" and \"apt-get install libglu1-mesa-dev\"")
+    endif()
+
     configure_qt(
         SOURCE_PATH ${SOURCE_PATH}
         PLATFORM "linux-g++"
@@ -153,7 +157,9 @@ file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/lib/cmake)
 if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "release")
     file(GLOB BINARY_TOOLS "${CURRENT_PACKAGES_DIR}/bin/*")
     list(FILTER BINARY_TOOLS EXCLUDE REGEX "\\.dll\$")
-    file(INSTALL ${BINARY_TOOLS} DESTINATION ${CURRENT_PACKAGES_DIR}/tools/qt5)
+    file(INSTALL ${BINARY_TOOLS}
+         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+         DESTINATION ${CURRENT_PACKAGES_DIR}/tools/qt5)
     file(REMOVE ${BINARY_TOOLS})
 
     file(COPY ${CMAKE_CURRENT_LIST_DIR}/qt_release.conf DESTINATION ${CURRENT_PACKAGES_DIR}/tools/qt5)
