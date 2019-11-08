@@ -19,6 +19,7 @@ vcpkg_from_github(
 
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
+    PREFER_NINJA
     OPTIONS
         -DWITH_UNITTEST=OFF
         -DWITH_SSL=OFF
@@ -30,6 +31,10 @@ vcpkg_install_cmake()
 if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "release")
     # remove debug header
     file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
+endif()
+
+if(VCPKG_LIBRARY_LINKAGE STREQUAL static)
+    file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
 endif()
 
 if(VCPKG_BUILD_TYPE STREQUAL "debug")
